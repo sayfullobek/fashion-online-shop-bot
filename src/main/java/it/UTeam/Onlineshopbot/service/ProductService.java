@@ -51,6 +51,9 @@ public class ProductService implements ProductServiceImpl {
                     product.getPhotoId().add(save);
                     break;
                 case "other":
+                    if (productRepository.existsProductByNameEqualsIgnoreCaseAndIdNot(product.getName(), id)) {
+                        return ApiResponse.builder().message("Bunday mahsulot avvaldan mavjud").success(false).status(409).build();
+                    }
                     product.setName(productDto.getName());
                     product.setPrice(product.getPrice());
                     product.setDescription(product.getDescription());
