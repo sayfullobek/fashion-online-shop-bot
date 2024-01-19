@@ -63,4 +63,11 @@ public class ProductController implements ProductControllerImpl {
         ApiResponse apiResponse = productService.deleteOnePhoto(id);
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
+
+    @GetMapping("/category-by/{id}")
+    @Override
+    public HttpEntity<?> getAllByCategoryId(@PathVariable Integer id) {
+        List<Product> allByCategoryId = productService.getAllByCategoryId(id);
+        return ResponseEntity.ok(allByCategoryId);
+    }
 }

@@ -116,4 +116,9 @@ public class ProductService implements ProductServiceImpl {
         }
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
     }
+
+    @Override
+    public List<Product> getAllByCategoryId(Integer id) {
+        return productRepository.findAllByCategoryId(id);
+    }
 }

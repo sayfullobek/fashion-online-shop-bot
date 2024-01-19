@@ -17,4 +17,6 @@ public interface ProductControllerImpl {
     HttpEntity<?> getOne(UUID id);
 
     HttpEntity<?> deleteOnePhoto(UUID id);
+
+    HttpEntity<?> getAllByCategoryId(Integer id);
 }

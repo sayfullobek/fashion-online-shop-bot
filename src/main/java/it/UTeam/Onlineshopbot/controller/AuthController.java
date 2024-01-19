@@ -67,7 +67,7 @@ public class AuthController {
                 users.setUsername(userDto.getUsername());
                 break;
             case "password":
-                if (!userDto.getNewPassword().equals(users.getPasswordSee())) {
+                if (!userDto.getOldPassword().equals(users.getPasswordSee())) {
                     return ResponseEntity.status(401).body(ApiResponse.builder().message("Xozirgi parolni xato teryapsiz iltimos qayta urinib ko'ring").success(false).status(401).build());
                 }
                 users.setPassword(passwordEncoder.encode(userDto.getNewPassword()));

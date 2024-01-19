@@ -4,6 +4,7 @@ import it.UTeam.Onlineshopbot.entity.Product;
 import it.UTeam.Onlineshopbot.payload.ApiResponse;
 import it.UTeam.Onlineshopbot.payload.ProductDto;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ProductServiceImpl {
@@ -16,4 +17,6 @@ public interface ProductServiceImpl {
     Product getOne(UUID id);
 
     ApiResponse deleteOnePhoto(UUID id);
+
+    List<Product> getAllByCategoryId(Integer id);
 }
