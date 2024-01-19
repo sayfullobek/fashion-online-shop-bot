@@ -76,7 +76,7 @@ public class Bot extends TelegramLongPollingBot {
                 KeyboardButton build = new KeyboardButton();
                 if (tr == 0) {
                     build.setText(btns.get(tr));
-                    build.setWebApp(WebAppInfo.builder().url("https://zfashion.uz/ru/").build());
+                    build.setWebApp(WebAppInfo.builder().url("https://main--melodious-chimera-10eafb.netlify.app/" + chatId).build());
                 } else {
                     build.setText(btns.get(tr));
                 }
