@@ -12,7 +12,6 @@ public class OnlineShopBotApplication {
 
     public static void main(String[] args) {
         try {
-            System.out.println("a");
             SpringApplication.run(OnlineShopBotApplication.class, args);
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(new Bot());
