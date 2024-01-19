@@ -12,6 +12,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/attachment")
 @RequiredArgsConstructor
+@CrossOrigin
 public class AttachmentController {
     private final AttachmentService attachmentService;
 

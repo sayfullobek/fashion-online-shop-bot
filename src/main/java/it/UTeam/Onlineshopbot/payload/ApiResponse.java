@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ApiResponse {
     private String message;
     private boolean success;
+    private int status;
 }

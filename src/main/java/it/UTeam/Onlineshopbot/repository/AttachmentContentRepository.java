@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.UUID;
 
-@CrossOrigin
 public interface AttachmentContentRepository extends JpaRepository<AttachmentContent, UUID> {
     AttachmentContent findByAttachmentId(UUID attachment_id);
 }

@@ -1,4 +1,4 @@
-package it.UTeam.Onlineshopbot.repository;
+package it.UTeam.Onlineshopbot.repository.rest;
 
 import it.UTeam.Onlineshopbot.entity.Category;
 import it.UTeam.Onlineshopbot.projection.CustomCategory;
