@@ -1,7 +1,7 @@
 package it.UTeam.Onlineshopbot.security;
 
 import io.jsonwebtoken.*;
-import it.revo.Crudproject.service.AuthService;
+import it.UTeam.Onlineshopbot.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
