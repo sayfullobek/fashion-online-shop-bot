@@ -84,6 +84,7 @@ public class ProductService implements ProductServiceImpl {
             for (Photo photo : product.getPhotoId()) {
                 Attachment getPhoto = attachmentRepository.findById(photo.getPhotoId()).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
                 AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
+                attachmentRepository.delete(getPhoto);
                 attachmentContentRepository.delete(byAttachmentId);
                 photoRepository.deleteById(photo.getId());
             }
@@ -104,6 +105,7 @@ public class ProductService implements ProductServiceImpl {
         AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
         attachmentContentRepository.delete(byAttachmentId);
         List<Product> all = productRepository.findAll();
+        photoRepository.delete(photo);
         for (Product product : all) {
             for (Photo photo1 : product.getPhotoId()) {
                 product.getPhotoId().remove(photo1);
@@ -111,7 +113,6 @@ public class ProductService implements ProductServiceImpl {
                 break;
             }
         }
-        photoRepository.delete(photo);
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
     }
 }
