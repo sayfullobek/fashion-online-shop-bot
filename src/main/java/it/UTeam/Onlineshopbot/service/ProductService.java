@@ -105,11 +105,12 @@ public class ProductService implements ProductServiceImpl {
         Attachment getPhoto = attachmentRepository.findById(photo.getPhotoId()).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
         AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
         attachmentContentRepository.delete(byAttachmentId);
+        attachmentRepository.delete(getPhoto);
         List<Product> all = productRepository.findAll();
-        photoRepository.delete(photo);
         for (Product product : all) {
             for (Photo photo1 : product.getPhotoId()) {
                 product.getPhotoId().remove(photo1);
+                photoRepository.delete(photo);
                 productRepository.save(product);
                 break;
             }
