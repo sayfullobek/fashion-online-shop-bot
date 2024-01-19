@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -102,6 +103,14 @@ public class ProductService implements ProductServiceImpl {
         Attachment getPhoto = attachmentRepository.findById(photo.getPhotoId()).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
         AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
         attachmentContentRepository.delete(byAttachmentId);
+        List<Product> all = productRepository.findAll();
+        for (Product product : all) {
+            for (Photo photo1 : product.getPhotoId()) {
+                product.getPhotoId().remove(photo1);
+                productRepository.save(product);
+                break;
+            }
+        }
         photoRepository.delete(photo);
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
     }
