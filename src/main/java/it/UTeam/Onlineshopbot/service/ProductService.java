@@ -1,11 +1,11 @@
 package it.UTeam.Onlineshopbot.service;
 
-import it.UTeam.Onlineshopbot.entity.Category;
-import it.UTeam.Onlineshopbot.entity.Photo;
-import it.UTeam.Onlineshopbot.entity.Product;
+import it.UTeam.Onlineshopbot.entity.*;
 import it.UTeam.Onlineshopbot.impl.ProductServiceImpl;
 import it.UTeam.Onlineshopbot.payload.ApiResponse;
 import it.UTeam.Onlineshopbot.payload.ProductDto;
+import it.UTeam.Onlineshopbot.repository.AttachmentContentRepository;
+import it.UTeam.Onlineshopbot.repository.AttachmentRepository;
 import it.UTeam.Onlineshopbot.repository.PhotoRepository;
 import it.UTeam.Onlineshopbot.repository.ProductRepository;
 import it.UTeam.Onlineshopbot.repository.rest.CategoryRepository;
@@ -22,6 +22,8 @@ public class ProductService implements ProductServiceImpl {
     private final ProductRepository productRepository;
     private final PhotoRepository photoRepository;
     private final CategoryRepository categoryRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final AttachmentContentRepository attachmentContentRepository;
 
     @Override
     public ApiResponse create(ProductDto productDto) {
@@ -57,6 +59,7 @@ public class ProductService implements ProductServiceImpl {
                 case "photo":
                     Photo save = photoRepository.save(Photo.builder().photoId(productDto.getPhotoId()).build());
                     product.getPhotoId().add(save);
+                    product.setActive(true);
                     break;
                 case "other":
                     if (productRepository.existsProductByNameEqualsIgnoreCaseAndIdNot(product.getName(), id)) {
@@ -75,7 +78,16 @@ public class ProductService implements ProductServiceImpl {
 
     @Override
     public ApiResponse delete(UUID id) {
-        productRepository.delete(productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getProduct")));
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getProduct"));
+        productRepository.delete(product);
+        if (product.getPhotoId().size() != 0) {
+            for (Photo photo : product.getPhotoId()) {
+                Attachment getPhoto = attachmentRepository.findById(photo.getPhotoId()).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
+                AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
+                attachmentContentRepository.delete(byAttachmentId);
+                photoRepository.deleteById(photo.getId());
+            }
+        }
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
     }
 
