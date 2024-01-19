@@ -14,4 +14,6 @@ public interface ProductServiceImpl {
     ApiResponse delete(UUID id);
 
     Product getOne(UUID id);
+
+    ApiResponse deleteOnePhoto(UUID id);
 }

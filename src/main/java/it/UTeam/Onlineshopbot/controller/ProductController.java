@@ -56,4 +56,11 @@ public class ProductController implements ProductControllerImpl {
         Product one = productService.getOne(id);
         return ResponseEntity.ok(one);
     }
+
+    @DeleteMapping("/photo/{id}")
+    @Override
+    public HttpEntity<?> deleteOnePhoto(@PathVariable UUID id) {
+        ApiResponse apiResponse = productService.deleteOnePhoto(id);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
 }

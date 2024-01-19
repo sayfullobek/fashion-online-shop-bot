@@ -95,4 +95,14 @@ public class ProductService implements ProductServiceImpl {
     public Product getOne(UUID id) {
         return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getProduct"));
     }
+
+    @Override
+    public ApiResponse deleteOnePhoto(UUID id) {
+        Photo photo = photoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
+        Attachment getPhoto = attachmentRepository.findById(photo.getPhotoId()).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
+        AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
+        attachmentContentRepository.delete(byAttachmentId);
+        photoRepository.delete(photo);
+        return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
+    }
 }
