@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     boolean existsProductByNameEqualsIgnoreCase(String name);
-    boolean existsProductByNameEqualsIgnoreCaseAndIdNot(String name);
+
+    boolean existsProductByNameEqualsIgnoreCaseAndIdNot(String name, UUID id);
 }
