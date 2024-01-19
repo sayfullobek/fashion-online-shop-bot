@@ -86,11 +86,11 @@ public class ProductService implements ProductServiceImpl {
                 AttachmentContent byAttachmentId = attachmentContentRepository.findByAttachmentId(getPhoto.getId());
                 attachmentContentRepository.delete(byAttachmentId);
                 attachmentRepository.delete(getPhoto);
+                productRepository.delete(product);
                 photoRepository.deleteById(photo.getId());
                 break;
             }
         }
-        productRepository.delete(product);
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
     }
 
