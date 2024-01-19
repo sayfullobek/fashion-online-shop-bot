@@ -112,7 +112,6 @@ public class ProductService implements ProductServiceImpl {
                 product.getPhotoId().remove(photo1);
                 photoRepository.delete(photo);
                 productRepository.save(product);
-                break;
             }
         }
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
