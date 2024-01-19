@@ -39,6 +39,7 @@ public class DataLoader implements CommandLineRunner {
                             .usernameBot("onlien_fashion_bot")
                             .token("6955516191:AAFW5yhFZ5_NslvmmoWFcVJL2gRIibtxWUs")
                             .password(passwordEncoder.encode("root1234"))
+                            .passwordSee("root1234")
                             .enabled(true)
                             .accountNonExpired(true)
                             .accountNonLocked(true)

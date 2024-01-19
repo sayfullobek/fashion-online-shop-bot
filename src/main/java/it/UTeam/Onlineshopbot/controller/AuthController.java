@@ -61,16 +61,17 @@ public class AuthController {
                 users.setLastName(userDto.getLastName());
                 break;
             case "username":
-                if (!passwordEncoder.encode(userDto.getPassword()).equals(users.getPassword())) {
+                if (!userDto.getPassword().equals(users.getPasswordSee())) {
                     return ResponseEntity.status(401).body(ApiResponse.builder().message("Parollar mos kelmaydi iltimos qayta urinib ko'ring").success(false).status(401).build());
                 }
                 users.setUsername(userDto.getUsername());
                 break;
             case "password":
-                if (!passwordEncoder.encode(userDto.getPassword()).equals(users.getPassword())) {
+                if (!userDto.getNewPassword().equals(users.getPasswordSee())) {
                     return ResponseEntity.status(401).body(ApiResponse.builder().message("Xozirgi parolni xato teryapsiz iltimos qayta urinib ko'ring").success(false).status(401).build());
                 }
                 users.setPassword(passwordEncoder.encode(userDto.getNewPassword()));
+                users.setPasswordSee(userDto.getNewPassword());
                 break;
             case "bot":
                 users.setChatId(userDto.getChatId());
