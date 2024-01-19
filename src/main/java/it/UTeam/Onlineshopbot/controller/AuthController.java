@@ -7,12 +7,13 @@ import it.UTeam.Onlineshopbot.payload.ResToken;
 import it.UTeam.Onlineshopbot.payload.UserDto;
 import it.UTeam.Onlineshopbot.repository.AuthRepository;
 import it.UTeam.Onlineshopbot.security.JwtTokenProvider;
-import it.UTeam.Onlineshopbot.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -23,10 +24,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @CrossOrigin
 public class AuthController {
-    private final AuthService authservice;
     private final AuthRepository authRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public HttpEntity<?> login(@RequestBody ReqLogin reqLogin) {
@@ -53,7 +54,31 @@ public class AuthController {
 
     @PutMapping("/settings/edit/{id}")
     public HttpEntity<?> edit(@PathVariable UUID id, @RequestBody UserDto userDto) {
-        ApiResponse edit = authservice.edit(id, userDto);
-        return ResponseEntity.status(edit.getStatus()).body(edit);
+        Users users = authRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getUser"));
+        switch (userDto.getAbout()) {
+            case "firstNameAndLastName":
+                users.setFirstName(userDto.getFirstName());
+                users.setLastName(userDto.getLastName());
+                break;
+            case "username":
+                if (!passwordEncoder.encode(userDto.getPassword()).equals(users.getPassword())) {
+                    return ResponseEntity.status(401).body(ApiResponse.builder().message("Parollar mos kelmaydi iltimos qayta urinib ko'ring").success(false).status(401).build());
+                }
+                users.setUsername(userDto.getUsername());
+                break;
+            case "password":
+                if (!passwordEncoder.encode(userDto.getPassword()).equals(users.getPassword())) {
+                    return ResponseEntity.status(401).body(ApiResponse.builder().message("Xozirgi parolni xato teryapsiz iltimos qayta urinib ko'ring").success(false).status(401).build());
+                }
+                users.setPassword(passwordEncoder.encode(userDto.getNewPassword()));
+                break;
+            case "bot":
+                users.setChatId(userDto.getChatId());
+                users.setToken(userDto.getToken());
+                users.setUsernameBot(userDto.getUsernameBot());
+                break;
+        }
+        authRepository.save(users);
+        return ResponseEntity.status(200).body(ApiResponse.builder().message("Muvaffaqiyatli bajarildi").success(true).status(200).build());
     }
 }
