@@ -53,8 +53,8 @@ public class ProductService implements ProductServiceImpl {
         if (byId.isPresent()) {
             Product product = byId.get();
             switch (productDto.getAbout()) {
-                case "price":
-                    product.setSalePrice(product.getSalePrice());
+                case "salePrice":
+                    product.setSalePrice(productDto.getSalePrice());
                     break;
                 case "photo":
                     Photo save = photoRepository.save(Photo.builder().photoId(productDto.getPhotoId()).build());
@@ -66,8 +66,8 @@ public class ProductService implements ProductServiceImpl {
                         return ApiResponse.builder().message("Bunday mahsulot avvaldan mavjud").success(false).status(409).build();
                     }
                     product.setName(productDto.getName());
-                    product.setPrice(product.getPrice());
-                    product.setDescription(product.getDescription());
+                    product.setPrice(productDto.getPrice());
+                    product.setDescription(productDto.getDescription());
                     break;
             }
             productRepository.save(product);
