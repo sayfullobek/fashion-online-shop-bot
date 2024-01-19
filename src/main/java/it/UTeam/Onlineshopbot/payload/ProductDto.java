@@ -1,5 +1,6 @@
 package it.UTeam.Onlineshopbot.payload;
 
+import it.UTeam.Onlineshopbot.entity.Category;
 import it.UTeam.Onlineshopbot.entity.Photo;
 import it.UTeam.Onlineshopbot.entity.templates.AbsEntity;
 import lombok.*;
@@ -15,6 +16,8 @@ import java.util.UUID;
 @Builder
 public class ProductDto extends AbsEntity {
     private String name;
+    private Category category;
+    private Integer categoryId;
     private List<Photo> photoIds = new ArrayList<>();
     private UUID photoId;
     private double price;

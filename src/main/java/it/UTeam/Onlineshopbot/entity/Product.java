@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,9 @@ import java.util.List;
 public class Product extends AbsEntity {
     @Column(nullable = false, unique = true)
     private String name;
+
+    @ManyToOne(optional = false)
+    private Category category;
 
     @ManyToMany
     private List<Photo> photoId = new ArrayList<>();

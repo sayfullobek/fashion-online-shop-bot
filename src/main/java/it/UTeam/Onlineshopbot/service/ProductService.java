@@ -1,5 +1,6 @@
 package it.UTeam.Onlineshopbot.service;
 
+import it.UTeam.Onlineshopbot.entity.Category;
 import it.UTeam.Onlineshopbot.entity.Photo;
 import it.UTeam.Onlineshopbot.entity.Product;
 import it.UTeam.Onlineshopbot.impl.ProductServiceImpl;
@@ -7,6 +8,7 @@ import it.UTeam.Onlineshopbot.payload.ApiResponse;
 import it.UTeam.Onlineshopbot.payload.ProductDto;
 import it.UTeam.Onlineshopbot.repository.PhotoRepository;
 import it.UTeam.Onlineshopbot.repository.ProductRepository;
+import it.UTeam.Onlineshopbot.repository.rest.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,9 +21,14 @@ import java.util.UUID;
 public class ProductService implements ProductServiceImpl {
     private final ProductRepository productRepository;
     private final PhotoRepository photoRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public ApiResponse create(ProductDto productDto) {
+        Optional<Category> byId = categoryRepository.findById(productDto.getCategoryId());
+        if (!byId.isPresent()) {
+            return ApiResponse.builder().message("Bunday kategoriya mavjud emas").success(false).status(404).build();
+        }
         if (productRepository.existsProductByNameEqualsIgnoreCase(productDto.getName())) {
             return ApiResponse.builder().message("Bunday mahsulot avvaldan mavjud").success(false).status(409).build();
         }
@@ -31,6 +38,7 @@ public class ProductService implements ProductServiceImpl {
                         .price(productDto.getPrice())
                         .salePrice(0)
                         .description(productDto.getDescription())
+                        .category(byId.get())
                         .active(false)
                         .build()
         );
