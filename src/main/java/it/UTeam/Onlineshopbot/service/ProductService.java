@@ -79,7 +79,6 @@ public class ProductService implements ProductServiceImpl {
     @Override
     public ApiResponse delete(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getProduct"));
-        productRepository.delete(product);
         if (product.getPhotoId().size() != 0) {
             for (Photo photo : product.getPhotoId()) {
                 Attachment getPhoto = attachmentRepository.findById(photo.getPhotoId()).orElseThrow(() -> new ResourceNotFoundException("getPhoto"));
@@ -88,6 +87,7 @@ public class ProductService implements ProductServiceImpl {
                 photoRepository.deleteById(photo.getId());
             }
         }
+        productRepository.delete(product);
         return ApiResponse.builder().message("Muvaffaqiyatli o'chirildi").success(true).status(200).build();
     }
 
