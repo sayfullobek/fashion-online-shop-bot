@@ -36,6 +36,8 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Qochqorov")
                             .roles(Collections.singleton(roleRepository.findById(1).orElseThrow(() -> new ResourceNotFoundException("getRole"))))
                             .username("adminjon")
+                            .usernameBot("onlien_fashion_bot")
+                            .token("6955516191:AAFW5yhFZ5_NslvmmoWFcVJL2gRIibtxWUs")
                             .password(passwordEncoder.encode("root1234"))
                             .enabled(true)
                             .accountNonExpired(true)

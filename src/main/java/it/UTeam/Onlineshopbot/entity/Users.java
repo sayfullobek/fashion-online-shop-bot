@@ -21,10 +21,13 @@ public class Users extends AbsEntity implements UserDetails {
 
     private String lastName;
 
-    private String chatId;
     private String botFirstName;
     private String botLastName;
     private String botUsername;
+
+    private String chatId;
+    private String usernameBot;
+    private String token;
 
     @Column(unique = true)
     private String username;

@@ -4,8 +4,10 @@ import it.UTeam.Onlineshopbot.entity.Users;
 import it.UTeam.Onlineshopbot.payload.ApiResponse;
 import it.UTeam.Onlineshopbot.payload.ReqLogin;
 import it.UTeam.Onlineshopbot.payload.ResToken;
+import it.UTeam.Onlineshopbot.payload.UserDto;
 import it.UTeam.Onlineshopbot.repository.AuthRepository;
 import it.UTeam.Onlineshopbot.security.JwtTokenProvider;
+import it.UTeam.Onlineshopbot.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @CrossOrigin
 public class AuthController {
+    private final AuthService authservice;
     private final AuthRepository authRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -46,5 +49,11 @@ public class AuthController {
             return ResponseEntity.ok(byId.get());
         }
         return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/settings/edit/{id}")
+    public HttpEntity<?> edit(@PathVariable UUID id, @RequestBody UserDto userDto) {
+        ApiResponse edit = authservice.edit(id, userDto);
+        return ResponseEntity.status(edit.getStatus()).body(edit);
     }
 }
