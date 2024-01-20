@@ -13,6 +13,8 @@ public interface BotConfig {
             "Посмотреть одежду", "Связаться с нами", "Настройки"
     );
     //    ru
+    //    uz
+
     List<String> SETTINGS = Arrays.asList(
             "O'zbekcha", "Русский", "Orqaga"
     );
