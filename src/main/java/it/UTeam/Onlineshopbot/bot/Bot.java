@@ -64,12 +64,13 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return getUserByRole().getToken();
+        return BotConfig.TOKEN;
     }
+
 
     @Override
     public String getBotUsername() {
-        return getUserByRole().getUsernameBot();
+        return BotConfig.USERNAME;
     }
 
     public void sendMsg(String chatId, String text, Integer messageId) {
