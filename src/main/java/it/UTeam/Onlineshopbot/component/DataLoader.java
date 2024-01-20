@@ -33,8 +33,8 @@ public class DataLoader implements CommandLineRunner {
             authRepository.save(
                     Users.builder()
                             .adminForId("adminbek12")
-                            .firstName("Qozi")
-                            .lastName("Qochqorov")
+                            .firstName("Admin")
+                            .lastName("Adminov")
                             .roles(Collections.singleton(roleRepository.findById(1).orElseThrow(() -> new ResourceNotFoundException("getRole"))))
                             .username("adminjon")
                             .usernameBot("onlien_fashion_bot")
