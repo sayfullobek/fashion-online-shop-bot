@@ -16,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,12 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/users")
+    public HttpEntity<?> getUsersList() {
+        List<Users> all = authRepository.findAll();
+        return ResponseEntity.ok(all);
+    }
 
     @PostMapping("/login")
     public HttpEntity<?> login(@RequestBody ReqLogin reqLogin) {
