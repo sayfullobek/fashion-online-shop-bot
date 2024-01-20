@@ -1,5 +1,10 @@
 package it.UTeam.Onlineshopbot.bot;
 
+import it.UTeam.Onlineshopbot.entity.Users;
+import it.UTeam.Onlineshopbot.repository.AuthRepository;
+import it.UTeam.Onlineshopbot.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -11,9 +16,18 @@ import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class Bot extends TelegramLongPollingBot {
+    private final AuthRepository authRepository;
+    private final RoleRepository roleRepository;
+
+    public Users getUserByRole() {
+        return authRepository.findUsersByRoles(Collections.singleton(roleRepository.findById(1).orElseThrow(() -> new ResourceNotFoundException("getRole"))));
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
@@ -24,7 +38,7 @@ public class Bot extends TelegramLongPollingBot {
                 if (text.equals("/start")) {
                     getBtn(chatId, "Assalomu aleykum bizning online do'konimizga hush kelibsiz", BotConfig.START_BTN);
                 } else if (BotConfig.START_BTN.get(1).equals(text)) {
-                    sendMsg(chatId, "Murojat uchun @savdoline_online ushbu profilga murojat qiling", 0);
+                    sendMsg(chatId, "Murojat uchun " + getUserByRole().getUsername() + " ushbu profilga murojat qiling", 0);
                 } else if (BotConfig.START_BTN.get(2).equals(text)) {
                     getBtn(chatId, "Sozlamalar", BotConfig.SETTINGS);
                 } else if (text.equals("Orqaga")) {
@@ -36,12 +50,12 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return BotConfig.TOKEN;
+        return getUserByRole().getToken();
     }
 
     @Override
     public String getBotUsername() {
-        return BotConfig.USERNAME;
+        return getUserByRole().getUsernameBot();
     }
 
     public void sendMsg(String chatId, String text, Integer messageId) {
@@ -74,7 +88,7 @@ public class Bot extends TelegramLongPollingBot {
             KeyboardRow row = new KeyboardRow();
             for (int j = 0; j < 2; j++) {
                 KeyboardButton build = new KeyboardButton();
-                if (tr == 0) {
+                if (btns.get(tr).equals("Kiyimlarni ko'rish")) {
                     build.setText(btns.get(tr));
                     build.setWebApp(WebAppInfo.builder().url("https://main--melodious-chimera-10eafb.netlify.app/" + chatId).build());
                 } else {
