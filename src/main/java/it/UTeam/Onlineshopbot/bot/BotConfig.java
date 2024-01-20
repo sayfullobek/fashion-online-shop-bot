@@ -12,6 +12,7 @@ public interface BotConfig {
     List<String> START_BTN_RU = Arrays.asList(
             "Посмотреть одежду", "Связаться с нами", "Настройки"
     );
+    //    ru
     List<String> SETTINGS = Arrays.asList(
             "O'zbekcha", "Русский", "Orqaga"
     );
