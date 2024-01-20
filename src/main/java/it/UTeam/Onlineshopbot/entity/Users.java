@@ -17,6 +17,8 @@ import java.util.Set;
 @Builder
 @Entity
 public class Users extends AbsEntity implements UserDetails {
+    private String adminForId;
+
     private String firstName;
 
     private String lastName;

@@ -4,7 +4,6 @@ import it.UTeam.Onlineshopbot.entity.Users;
 import it.UTeam.Onlineshopbot.repository.AuthRepository;
 import it.UTeam.Onlineshopbot.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class Bot extends TelegramLongPollingBot {
     private final RoleRepository roleRepository;
 
     public Users getUserByRole() {
-        return authRepository.findUsersByRoles(Collections.singleton(roleRepository.findById(1).orElseThrow(() -> new ResourceNotFoundException("getRole"))));
+        return authRepository.findUsersByAdminForIdEqualsIgnoreCase("adminbek12");
     }
 
     @Override
