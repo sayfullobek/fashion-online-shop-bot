@@ -27,7 +27,11 @@ public class Bot extends TelegramLongPollingBot {
     private final RoleRepository roleRepository;
 
     public Users getUserByRole() {
-        return authRepository.findUsersByAdminForIdEqualsIgnoreCase("adminbek12");
+        return authRepository.findUsersByAdminForId("adminbek12");
+    }
+
+    public Users getUserByChatId(String chatId) {
+        return authRepository.findUsersByChatId(chatId);
     }
 
     @Override
@@ -39,14 +43,14 @@ public class Bot extends TelegramLongPollingBot {
             if (message.hasText()) {
                 String text = message.getText();
                 if (text.equals("/start")) {
-                    getBtn(chatId, getUserByRole().getLanBot().equals("uz") ? "Assalomu aleykum bizning online do'konimizga hush kelibsiz" : "Здравствуйте, добро пожаловать в наш интернет-магазин", BotConfig.START_BTN);
                     authService.registerBotUser(UserDto.builder().chatId(chatId).botFirstName(from.getFirstName()).botLastName(from.getLastName()).botUsername(from.getUserName()).build());
+                    getBtn(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Assalomu aleykum bizning online do'konimizga hush kelibsiz" : "Здравствуйте, добро пожаловать в наш интернет-магазин", BotConfig.START_BTN);
                 } else if (BotConfig.START_BTN.get(1).equals(text) || BotConfig.START_BTN_RU.get(1).equals(text)) {
-                    sendMsg(chatId, getUserByRole().getLanBot().equals("uz") ? "Murojat uchun " + getUserByRole().getBotUsername() + " ushbu profilga murojat qiling" : "Чтобы подать заявку " + getUserByRole().getBotUsername() + " примените к этому профилю", 0);
+                    sendMsg(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Murojat uchun " + getUserByRole().getBotUsername() + " ushbu profilga murojat qiling" : "Чтобы подать заявку " + getUserByRole().getBotUsername() + " примените к этому профилю", 0);
                 } else if (BotConfig.START_BTN.get(2).equals(text) || BotConfig.START_BTN_RU.get(2).equals(text)) {
-                    getBtn(chatId, getUserByRole().getLanBot().equals("uz") ? "Sozlamalar" : "Настройки", BotConfig.SETTINGS);
+                    getBtn(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Sozlamalar" : "Настройки", getUserByChatId(chatId).getLanBot().equals("uz") ? BotConfig.SETTINGS : BotConfig.SETTINGS_RU);
                 } else if (text.equals(BotConfig.SETTINGS.get(2)) || text.equals(BotConfig.SETTINGS_RU.get(2))) {
-                    getBtn(chatId, getUserByRole().getLanBot().equals("uz") ? "Asosiy bo'limga qaytdingiz" : "Вы вернулись в основной раздел", BotConfig.START_BTN);
+                    getBtn(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Asosiy bo'limga qaytdingiz" : "Вы вернулись в основной раздел", getUserByChatId(chatId).getLanBot().equals("uz") ? BotConfig.START_BTN : BotConfig.START_BTN_RU);
                 } else if (text.equals(BotConfig.SETTINGS.get(0))) {
                     authService.changeLan(chatId, "uz");
                     getBtn(chatId, "Assalomu aleykum bizning online do'konimizga hush kelibsiz", BotConfig.START_BTN);

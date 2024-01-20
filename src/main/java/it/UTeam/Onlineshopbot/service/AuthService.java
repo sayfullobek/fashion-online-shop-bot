@@ -32,7 +32,7 @@ public class AuthService implements UserDetailsService {
 
     public ApiResponse registerBotUser(UserDto userDto) {
         Users usersByChatId = authRepository.findUsersByChatId(userDto.getChatId());
-        if (usersByChatId != null) {
+        if (usersByChatId == null) {
             authRepository.save(
                     Users.builder()
                             .lanBot("uz")
