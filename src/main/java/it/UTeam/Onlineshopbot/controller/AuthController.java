@@ -52,9 +52,14 @@ public class AuthController {
         return ResponseEntity.ok(null);
     }
 
+    public Users getUserByRole() {
+        return authRepository.findUsersByAdminForId("adminbek12");
+    }
+
     @PutMapping("/settings/edit/{id}")
     public HttpEntity<?> edit(@PathVariable UUID id, @RequestBody UserDto userDto) {
-        Users users = authRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getUser"));
+        Users usersId = authRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("getUser"));
+        Users users = getUserByRole();
         switch (userDto.getAbout()) {
             case "firstNameAndLastName":
                 users.setFirstName(userDto.getFirstName());
