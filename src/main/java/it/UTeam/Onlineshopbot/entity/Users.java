@@ -23,6 +23,7 @@ public class Users extends AbsEntity implements UserDetails {
 
     private String lastName;
 
+    private String lanBot;
     private String botFirstName;
     private String botLastName;
     private String botUsername;

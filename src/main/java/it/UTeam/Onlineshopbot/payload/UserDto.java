@@ -17,6 +17,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
 
+    private String lanBot;
     private String botFirstName;
     private String botLastName;
     private String botUsername;

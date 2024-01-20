@@ -1,13 +1,16 @@
 package it.UTeam.Onlineshopbot.bot;
 
 import it.UTeam.Onlineshopbot.entity.Users;
+import it.UTeam.Onlineshopbot.payload.UserDto;
 import it.UTeam.Onlineshopbot.repository.AuthRepository;
 import it.UTeam.Onlineshopbot.repository.RoleRepository;
+import it.UTeam.Onlineshopbot.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -20,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Bot extends TelegramLongPollingBot {
     private final AuthRepository authRepository;
+    private final AuthService authService;
     private final RoleRepository roleRepository;
 
     public Users getUserByRole() {
@@ -31,16 +35,24 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage()) {
             Message message = update.getMessage();
             String chatId = message.getChatId().toString();
+            User from = message.getFrom();
             if (message.hasText()) {
                 String text = message.getText();
                 if (text.equals("/start")) {
+                    getBtn(chatId, getUserByRole().getLanBot().equals("uz") ? "Assalomu aleykum bizning online do'konimizga hush kelibsiz" : "Здравствуйте, добро пожаловать в наш интернет-магазин", BotConfig.START_BTN);
+                    authService.registerBotUser(UserDto.builder().chatId(chatId).botFirstName(from.getFirstName()).botLastName(from.getLastName()).botUsername(from.getUserName()).build());
+                } else if (BotConfig.START_BTN.get(1).equals(text) || BotConfig.START_BTN_RU.get(1).equals(text)) {
+                    sendMsg(chatId, getUserByRole().getLanBot().equals("uz") ? "Murojat uchun " + getUserByRole().getBotUsername() + " ushbu profilga murojat qiling" : "Чтобы подать заявку " + getUserByRole().getBotUsername() + " примените к этому профилю", 0);
+                } else if (BotConfig.START_BTN.get(2).equals(text) || BotConfig.START_BTN_RU.get(2).equals(text)) {
+                    getBtn(chatId, getUserByRole().getLanBot().equals("uz") ? "Sozlamalar" : "Настройки", BotConfig.SETTINGS);
+                } else if (text.equals(BotConfig.SETTINGS.get(2)) || text.equals(BotConfig.SETTINGS_RU.get(2))) {
+                    getBtn(chatId, getUserByRole().getLanBot().equals("uz") ? "Asosiy bo'limga qaytdingiz" : "Вы вернулись в основной раздел", BotConfig.START_BTN);
+                } else if (text.equals(BotConfig.SETTINGS.get(0))) {
+                    authService.changeLan(chatId, "uz");
                     getBtn(chatId, "Assalomu aleykum bizning online do'konimizga hush kelibsiz", BotConfig.START_BTN);
-                } else if (BotConfig.START_BTN.get(1).equals(text)) {
-                    sendMsg(chatId, "Murojat uchun " + getUserByRole().getUsername() + " ushbu profilga murojat qiling", 0);
-                } else if (BotConfig.START_BTN.get(2).equals(text)) {
-                    getBtn(chatId, "Sozlamalar", BotConfig.SETTINGS);
-                } else if (text.equals("Orqaga")) {
-                    getBtn(chatId, "Asosiy bo'limga qaytdingiz", BotConfig.START_BTN);
+                } else if (text.equals(BotConfig.SETTINGS.get(1))) {
+                    authService.changeLan(chatId, "ru");
+                    getBtn(chatId, "Здравствуйте, добро пожаловать в наш интернет-магазин", BotConfig.START_BTN_RU);
                 }
             }
         }
