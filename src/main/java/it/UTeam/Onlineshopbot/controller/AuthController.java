@@ -1,11 +1,14 @@
 package it.UTeam.Onlineshopbot.controller;
 
+import it.UTeam.Onlineshopbot.entity.Basket;
+import it.UTeam.Onlineshopbot.entity.Product;
+import it.UTeam.Onlineshopbot.entity.ProductBasket;
 import it.UTeam.Onlineshopbot.entity.Users;
-import it.UTeam.Onlineshopbot.payload.ApiResponse;
-import it.UTeam.Onlineshopbot.payload.ReqLogin;
-import it.UTeam.Onlineshopbot.payload.ResToken;
-import it.UTeam.Onlineshopbot.payload.UserDto;
+import it.UTeam.Onlineshopbot.payload.*;
 import it.UTeam.Onlineshopbot.repository.AuthRepository;
+import it.UTeam.Onlineshopbot.repository.BasketProductRepository;
+import it.UTeam.Onlineshopbot.repository.BasketRepository;
+import it.UTeam.Onlineshopbot.repository.ProductRepository;
 import it.UTeam.Onlineshopbot.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -16,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +33,9 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final BasketRepository basketRepository;
+    private final ProductRepository productRepository;
+    private final BasketProductRepository basketProductRepository;
 
     @GetMapping("/users")
     public HttpEntity<?> getUsersList() {
@@ -98,9 +105,35 @@ public class AuthController {
     @GetMapping("/chat-id/{chatId}")
     public HttpEntity<?> validateUserByChatId(@PathVariable String chatId) {
         Users usersByChatId = authRepository.findUsersByChatId(chatId);
-        if (usersByChatId != null) {
+        if (usersByChatId == null) {
             return ResponseEntity.status(404).body(ApiResponse.builder().message("Bunday foydalanuvchi mavjud emas").success(false).status(404).build());
         }
         return ResponseEntity.status(404).body(ApiResponse.builder().message("Muvaffaqiyatli").success(true).status(200).build());
+    }
+
+    @PostMapping("/basket-save/{chatId}")
+    public HttpEntity<?> saveBaket(@PathVariable String chatId, @RequestBody BasketDto basketDto) {
+        Users users = authRepository.findUsersByChatId(chatId);
+        if (users == null) {
+            return ResponseEntity.status(404).body(ApiResponse.builder().message("Bunday foydalanuvchi mavjud emas").success(false).status(404).build());
+        }
+        Basket basket = basketRepository.findByUsers(users);
+        Product product = productRepository.findById(basketDto.getOneProduct()).orElseThrow(() -> new ResourceNotFoundException("getBasket"));
+        ProductBasket productBasket = basketProductRepository.save(
+                ProductBasket.builder().product(Collections.singletonList(product)).size(basketDto.getSizeProduct()).build()
+        );
+        basket.getProductBaskets().add(productBasket);
+        basketRepository.save(basket);
+        return ResponseEntity.ok("muvaffaqiyatli");
+    }
+
+    @GetMapping("/get-basket/by-chat-id/{chatId}")
+    public HttpEntity<?> getBasketByChatId(@PathVariable String chatId) {
+        Users users = authRepository.findUsersByChatId(chatId);
+        if (users == null) {
+            return ResponseEntity.status(404).body(ApiResponse.builder().message("Bunday foydalanuvchi mavjud emas").success(false).status(404).build());
+        }
+        Basket byUsers = basketRepository.findByUsers(users);
+        return ResponseEntity.ok(byUsers);
     }
 }
