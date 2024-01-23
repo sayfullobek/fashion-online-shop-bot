@@ -111,7 +111,7 @@ public class AuthController {
         return ResponseEntity.status(200).body(ApiResponse.builder().message("Muvaffaqiyatli").success(true).status(200).build());
     }
 
-    @PostMapping("/basket-save/{chatId}")
+    @PutMapping("/basket-save/{chatId}")
     public HttpEntity<?> saveBaket(@PathVariable String chatId, @RequestBody BasketDto basketDto) {
         Users users = authRepository.findUsersByChatId(chatId);
         if (users == null) {
