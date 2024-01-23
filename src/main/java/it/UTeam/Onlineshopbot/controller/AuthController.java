@@ -1,5 +1,6 @@
 package it.UTeam.Onlineshopbot.controller;
 
+import it.UTeam.Onlineshopbot.bot.BotConfig;
 import it.UTeam.Onlineshopbot.entity.Basket;
 import it.UTeam.Onlineshopbot.entity.Product;
 import it.UTeam.Onlineshopbot.entity.ProductBasket;
@@ -11,6 +12,8 @@ import it.UTeam.Onlineshopbot.repository.BasketRepository;
 import it.UTeam.Onlineshopbot.repository.ProductRepository;
 import it.UTeam.Onlineshopbot.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -140,5 +144,25 @@ public class AuthController {
         }
         Basket byUsers = basketRepository.findByUsers(users);
         return ResponseEntity.ok(byUsers);
+    }
+
+    @GetMapping("/send-message/{chatId}")
+    public HttpEntity<?> sendMessage(@PathVariable String chatId) throws IOException {
+        StringBuilder sms = new StringBuilder();
+        Users usersByChatId = authRepository.findUsersByChatId(chatId);
+        Basket byUsers = basketRepository.findByUsers(usersByChatId);
+        for (ProductBasket productBasket : byUsers.getProductBaskets()) {
+            Product product = productBasket.getProduct().get(0);
+            sms.append(
+                    product.getName() + " " + productBasket.getSize() + " X " + (product.getPrice() - product.getSalePrice()) + " = " + (productBasket.getSize() * (product.getPrice() - product.getSalePrice())) + "\n"
+            );
+        }
+        String send = "https://api.telegram.org/bot" +
+                BotConfig.TOKEN +
+                "/sendMessage?chat_id=" + chatId +
+                "&text=" + sms + "\n\n\nUmumiy narxi = " + byUsers.getAllPrice() + "&reply_markup={" + "\"inline_keyboard\"" + ":%20[[{" + "\"text\"" + ":%20 " + "\"Tasdiqlash ✅\"" + ",%20" + "\"callback_data\"" + ":%20" + "\"sotib olaman : " + chatId + "\" }]]}";
+        HttpGet httpGet = new HttpGet(send);
+        HttpClients.createDefault().execute(httpGet);
+        return ResponseEntity.status(200).body(ApiResponse.builder().message("Ok").success(true).status(200).build());
     }
 }
