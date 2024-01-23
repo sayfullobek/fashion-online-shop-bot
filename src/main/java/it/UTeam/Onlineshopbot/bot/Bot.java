@@ -74,7 +74,7 @@ public class Bot extends TelegramLongPollingBot {
             String chatId = callbackQuery.getFrom().getId().toString();
             String[] da = data.split(" : ");
             if (da[0].equals("sotib olaman")) {
-                sendMsg(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Telefon raqamingizni ulashing iltimos" : "Поделитесь, пожалуйста, своим номером телефона", 0);
+                shareContact(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Telefon raqamingizni ulashing iltimos" : "Поделитесь, пожалуйста, своим номером телефона");
                 BotConfig.IS.put(chatId, "phone");
             }
         }
@@ -121,7 +121,7 @@ public class Bot extends TelegramLongPollingBot {
             KeyboardRow row = new KeyboardRow();
             for (int j = 0; j < 2; j++) {
                 KeyboardButton build = new KeyboardButton();
-                if (btns.get(tr).equals("Kiyimlarni ko'rish")) {
+                if (btns.get(tr).equals("Kiyimlarni ko'rish") || btns.get(tr).equals("Посмотреть одежду")) {
                     build.setText(btns.get(tr));
                     build.setWebApp(WebAppInfo.builder().url("https://main--melodious-chimera-10eafb.netlify.app/" + chatId).build());
                 } else {
@@ -140,6 +140,32 @@ public class Bot extends TelegramLongPollingBot {
             row.add(build);
             rows.add(row);
         }
+        replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        try {
+            execute(
+                    SendMessage.builder()
+                            .chatId(chatId)
+                            .text(text)
+                            .replyMarkup(replyKeyboardMarkup)
+                            .build()
+            );
+        } catch (TelegramApiException e) {
+            System.err.println("Not Btn");
+        }
+    }
+
+    public void shareContact(String chatId, String text) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> rows = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardButton build = KeyboardButton.builder()
+                .text(text)
+                .requestContact(true)
+                .build();
+        row.add(build);
+        rows.add(row);
         replyKeyboardMarkup.setKeyboard(rows);
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
