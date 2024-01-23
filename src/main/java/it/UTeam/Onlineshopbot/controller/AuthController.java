@@ -1,19 +1,10 @@
 package it.UTeam.Onlineshopbot.controller;
 
-import it.UTeam.Onlineshopbot.bot.BotConfig;
-import it.UTeam.Onlineshopbot.entity.Basket;
-import it.UTeam.Onlineshopbot.entity.Product;
-import it.UTeam.Onlineshopbot.entity.ProductBasket;
-import it.UTeam.Onlineshopbot.entity.Users;
+import it.UTeam.Onlineshopbot.entity.*;
 import it.UTeam.Onlineshopbot.payload.*;
-import it.UTeam.Onlineshopbot.repository.AuthRepository;
-import it.UTeam.Onlineshopbot.repository.BasketProductRepository;
-import it.UTeam.Onlineshopbot.repository.BasketRepository;
-import it.UTeam.Onlineshopbot.repository.ProductRepository;
+import it.UTeam.Onlineshopbot.repository.*;
 import it.UTeam.Onlineshopbot.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +30,7 @@ public class AuthController {
     private final BasketRepository basketRepository;
     private final ProductRepository productRepository;
     private final BasketProductRepository basketProductRepository;
+    private final RequestRepository requestRepository;
 
     @GetMapping("/users")
     public HttpEntity<?> getUsersList() {
@@ -146,23 +137,35 @@ public class AuthController {
         return ResponseEntity.ok(byUsers);
     }
 
-    @GetMapping("/send-message/{chatId}")
-    public HttpEntity<?> sendMessage(@PathVariable String chatId) throws IOException {
-        StringBuilder sms = new StringBuilder();
-        Users usersByChatId = authRepository.findUsersByChatId(chatId);
-        Basket byUsers = basketRepository.findByUsers(usersByChatId);
-        for (ProductBasket productBasket : byUsers.getProductBaskets()) {
-            Product product = productBasket.getProduct().get(0);
-            sms.append(
-                    product.getName() + " " + productBasket.getSize() + " X " + (product.getPrice() - product.getSalePrice()) + " = " + (productBasket.getSize() * (product.getPrice() - product.getSalePrice())) + "\n"
-            );
-        }
-        String send = "https://api.telegram.org/bot" +
-                BotConfig.TOKEN +
-                "/sendMessage?chat_id=" + chatId +
-                "&text=" + sms + "\n\n\nUmumiy narxi = " + byUsers.getAllPrice() + "&reply_markup={" + "\"inline_keyboard\"" + ":%20[[{" + "\"text\"" + ":%20 " + "\"Tasdiqlash ✅\"" + ",%20" + "\"callback_data\"" + ":%20" + "\"sotib olaman : " + chatId + "\" }]]}";
-        HttpGet httpGet = new HttpGet(send);
-        HttpClients.createDefault().execute(httpGet);
-        return ResponseEntity.status(200).body(ApiResponse.builder().message("Ok").success(true).status(200).build());
+    @GetMapping("/request/get")
+    public HttpEntity<?> getAllRequest() {
+        List<Request> all = requestRepository.findAll();
+        return ResponseEntity.ok(all);
     }
+
+//    @GetMapping("/send-message/{chatId}")
+//    public HttpEntity<?> sendMessage(@PathVariable String chatId) throws IOException {
+//        StringBuilder sms = new StringBuilder();
+//        Users usersByChatId = authRepository.findUsersByChatId(chatId);
+//        Basket byUsers = basketRepository.findByUsers(usersByChatId);
+//        for (ProductBasket productBasket : byUsers.getProductBaskets()) {
+//            Product product = productBasket.getProduct().get(0);
+//            sms.append(
+//                    product.getName() + "%20" + productBasket.getSize() + "%20X%20" + (product.getPrice() - product.getSalePrice()) + "%20=%20" + (productBasket.getSize() * (product.getPrice() - product.getSalePrice()))
+//            );
+//        }
+//        System.out.println(sms);
+//
+////        https://api.telegram.org/bot6955516191:AAFW5yhFZ5_NslvmmoWFcVJL2gRIibtxWUs/sendMessage?chat_id=5555360669&text=%3Cp%3Esalom%3C/p%3E&reply_markup={%22inline_keyboard%22:%20[[{%22text%22:%20%22hi%22,%20%22callback_data%22:%20%22hi%22}]]}
+//
+//
+//        String send = "https://api.telegram.org/bot" +
+//                BotConfig.TOKEN +
+//                "/sendMessage?chat_id=" + chatId +
+//                "&text=" + sms.toString() + "%20-%20Umumiy%20narxi%20=%20" + byUsers.getAllPrice() + "&reply_markup=;
+//        System.out.println(send);
+//        HttpGet httpGet = new HttpGet(send);
+//        HttpClients.createDefault().execute(httpGet);
+//        return ResponseEntity.status(200).body(ApiResponse.builder().message("Ok").success(true).status(200).build());
+//    }
 }

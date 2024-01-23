@@ -1,6 +1,7 @@
 package it.UTeam.Onlineshopbot.bot;
 
 import it.UTeam.Onlineshopbot.entity.Users;
+import it.UTeam.Onlineshopbot.payload.ApiResponse;
 import it.UTeam.Onlineshopbot.payload.UserDto;
 import it.UTeam.Onlineshopbot.repository.AuthRepository;
 import it.UTeam.Onlineshopbot.repository.RoleRepository;
@@ -8,9 +9,7 @@ import it.UTeam.Onlineshopbot.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -58,6 +57,25 @@ public class Bot extends TelegramLongPollingBot {
                     authService.changeLan(chatId, "ru");
                     getBtn(chatId, "Здравствуйте, добро пожаловать в наш интернет-магазин", BotConfig.START_BTN_RU);
                 }
+            } else if (message.hasContact()) {
+                Contact contact = message.getContact();
+                if (BotConfig.IS.get(chatId) != null) {
+                    if (BotConfig.IS.get(chatId).equals("phone")) {
+                        ApiResponse apiResponse = authService.request(chatId, contact.getPhoneNumber());
+                        sendMsg(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Hurmatli mijoz sizning buyurtmangiz qabul qilindi tez orada sizga managerlarimiz a'loqaga chiqishadi. Buyurtmangizning raqami " + apiResponse.getMessage() : "Уважаемый покупатель, Ваш заказ принят и наши менеджеры свяжутся с Вами в ближайшее время. Номер вашего заказа " + apiResponse.getMessage(), 0);
+                        BotConfig.IS.remove(chatId);
+                        getBtn(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Assalomu aleykum bizning online do'konimizga hush kelibsiz" : "Здравствуйте, добро пожаловать в наш интернет-магазин", BotConfig.START_BTN);
+                    }
+                }
+            }
+        } else if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            String data = callbackQuery.getData();
+            String chatId = callbackQuery.getFrom().getId().toString();
+            String[] da = data.split(" : ");
+            if (da[0].equals("sotib olaman")) {
+                sendMsg(chatId, getUserByChatId(chatId).getLanBot().equals("uz") ? "Telefon raqamingizni ulashing iltimos" : "Поделитесь, пожалуйста, своим номером телефона", 0);
+                BotConfig.IS.put(chatId, "phone");
             }
         }
     }
