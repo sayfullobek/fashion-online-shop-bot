@@ -123,6 +123,11 @@ public class AuthController {
                 ProductBasket.builder().product(Collections.singletonList(product)).size(basketDto.getSizeProduct()).build()
         );
         basket.getProductBaskets().add(productBasket);
+        double tr = 0;
+        for (ProductBasket basketProductBasket : basket.getProductBaskets()) {
+            tr = tr + ((basketProductBasket.getProduct().get(0).getPrice() - basketProductBasket.getProduct().get(0).getSalePrice()) * basketProductBasket.getSize());
+        }
+        basket.setAllPrice(tr);
         basketRepository.save(basket);
         return ResponseEntity.ok("muvaffaqiyatli");
     }

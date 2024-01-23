@@ -20,4 +20,6 @@ public class Basket extends AbsEntity {
 
     @ManyToMany
     private List<ProductBasket> productBaskets;
+
+    private double allPrice;
 }

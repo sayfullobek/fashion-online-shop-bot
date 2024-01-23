@@ -47,7 +47,7 @@ public class AuthService implements UserDetailsService {
                             .build()
             );
             basketRepository.save(
-                    Basket.builder().users(users).productBaskets(null).build()
+                    Basket.builder().users(users).productBaskets(null).allPrice(0).build()
             );
         }
         return ApiResponse.builder().message("Saqlandi").success(true).status(200).build();
