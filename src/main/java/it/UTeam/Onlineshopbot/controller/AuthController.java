@@ -108,7 +108,7 @@ public class AuthController {
         if (usersByChatId == null) {
             return ResponseEntity.status(404).body(ApiResponse.builder().message("Bunday foydalanuvchi mavjud emas").success(false).status(404).build());
         }
-        return ResponseEntity.status(404).body(ApiResponse.builder().message("Muvaffaqiyatli").success(true).status(200).build());
+        return ResponseEntity.status(200).body(ApiResponse.builder().message("Muvaffaqiyatli").success(true).status(200).build());
     }
 
     @PostMapping("/basket-save/{chatId}")
