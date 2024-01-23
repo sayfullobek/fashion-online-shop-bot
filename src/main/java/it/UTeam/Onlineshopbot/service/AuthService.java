@@ -67,6 +67,7 @@ public class AuthService implements UserDetailsService {
         Users usersByChatId = authRepository.findUsersByChatId(chatId);
         Basket byUsers = basketRepository.findByUsers(usersByChatId);
         Request request = Request.builder()
+                .tr(basketRepository.findAll().size() + 1)
                 .users(byUsers.getUsers())
                 .productBaskets(byUsers.getProductBaskets())
                 .phoneNumber(phone)
@@ -78,7 +79,7 @@ public class AuthService implements UserDetailsService {
         byUsers.setAllPrice(0);
         byUsers.getProductBaskets().clear();
         basketRepository.save(byUsers);
-        return ApiResponse.builder().message(save.getId().toString()).success(true).status(200).build();
+        return ApiResponse.builder().message(save.getTr().toString()).success(true).status(200).build();
     }
 }
 

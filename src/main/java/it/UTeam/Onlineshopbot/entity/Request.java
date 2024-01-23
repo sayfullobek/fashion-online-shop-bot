@@ -18,6 +18,8 @@ public class Request extends AbsEntity {
     @OneToOne
     private Users users;
 
+    private Integer tr;
+
     @ManyToMany
     private List<ProductBasket> productBaskets;
 
